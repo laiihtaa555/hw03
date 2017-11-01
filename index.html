@@ -1,0 +1,141 @@
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>hw03</title>
+    <script src="https://d3js.org/d3.v3.js" charset="utf-8"></script>    
+</head>
+
+<body>
+   
+    
+    
+    <p id="toRed">把數字小於70改紅色</p>
+    <hr>   
+    
+    <div>利用比例尺的好朋友Min與Max來設定最長是150px, 最短是10px</div>
+    
+    
+    <div id='divBarChart'></div>
+    <input type="button" value="新增" onclick="update()">
+    <input type="button" value="刪除" onclick="del()">
+       
+      <hr>  
+    
+    
+    
+    <a href="https://jsbin.com/sohukipove/edit?html,js,console">hw: 試著用ordinal()秀出各政黨顏色</a>
+    
+    
+    <script>
+    
+    var number = [85, 60, 99, 49, 77, 82];
+        var pTag = d3.select("p#toRed");
+        for (var i = 0; i < number.length; i += 1) {
+           if (number[i] < 70) {
+                pTag.append("div").text((i+1) + ":" + number[i]).style({color:"red"});
+            } else {
+                pTag.append("div").text((i+1) + ":" + number[i]);
+            }
+        }        
+        
+        
+        
+        
+        
+             
+        var dataset = [77, 43, 88, 79, 99, 59];
+        var x_offset = 150;
+        var w = 900,
+            h = 300;
+        var svgAttr = {
+            id: "barChart",
+            width: w,         
+            height: h         
+        }
+        svg(svgAttr);
+        bind(dataset);
+        render();
+        
+        function svg(svgAttr) {
+            d3.select("#divBarChart")   
+			.append("svg")              
+            .attr(svgAttr);             
+        }
+        
+        function bind(dataSet) {
+            var sRect = d3.select("#barChart")
+                .selectAll("rect")
+                .data(dataSet);             
+            
+            sRect.enter().append("rect");   
+            sRect.exit().remove();          
+            
+            var sText = d3.select("#barChart")
+               .selectAll("text")
+               .data(dataSet);
+            sText.enter().append("text");
+            sText.exit().remove();
+        }
+        
+        function render() {
+            var yScale = d3.scale.linear()
+                .domain([10,150])
+                .range([10,150]);
+            d3.selectAll("#barChart rect")
+            .attr({
+                x: function(d, i) {
+                    return x_offset+43*i;
+                },
+                y: function(d) {
+                     return h - x_offset - yScale(d);
+                },
+                width: 40,
+                height: function (d) {
+                    return yScale(d);
+                },
+                fill: function(d) {
+                    if (d < 70) {
+                        return "red";
+                    } else {
+                        return "lightgreen";
+                    }
+                }
+            });
+           d3.selectAll("#barChart text")
+               .attr({
+                   x: function (d, i) {
+                       return x_offset + 43 * i + 10;
+                   },
+                   y: function (d) {
+                       return h - x_offset + 20;
+                   }
+               }).text(function (d) {
+                   return d;
+               });
+        }
+        
+        function update() {
+            var num = random(10, 150);
+            dataset.push(num);
+            bind(dataset);
+            render();
+        }
+        
+        function del() {
+            dataset.shift();
+            bind(dataset);
+            render();
+        }
+        
+        var random = function (m, n) {
+            var rScale = d3.scale.linear().domain([0, 1]).rangeRound([n, m]);
+            return rScale(Math.random());
+            //return Math.floor(Math.random() * (n - m + 1)) + m;
+        }
+  
+       
+        
+    </script>
+</body>
